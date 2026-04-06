@@ -9,8 +9,8 @@ import { create } from "zustand";
 
 export const useScrapeFormStore = create((set) => ({
   inputsText: "",
-  followingLimit: "2000",
-  chunkLimit: "100",
+  followingLimit: "500",
+  chunkLimit: "500",
   followersMin: "500",
   followersMax: "50000",
   token: "",

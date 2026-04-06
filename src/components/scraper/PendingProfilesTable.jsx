@@ -21,7 +21,7 @@ async function copyText(label, text) {
     reportClientError(
       "PendingProfilesTable/clipboard",
       err,
-      "Could not copy to clipboard.",
+      "Could not copy to clipboard."
     );
   }
 }
@@ -48,7 +48,7 @@ function PendingProfilesTable({
       <div
         className={cn(
           "rounded-lg border border-dashed bg-muted/20 px-6 py-16 text-center text-sm text-muted-foreground",
-          className,
+          className
         )}
       >
         Loading profiles…
@@ -61,7 +61,7 @@ function PendingProfilesTable({
       <div
         className={cn(
           "rounded-lg border border-dashed bg-muted/30 px-6 py-16 text-center text-sm text-muted-foreground",
-          className,
+          className
         )}
       >
         No pending profiles yet. Run a scrape from Home, then open Table and
@@ -75,7 +75,7 @@ function PendingProfilesTable({
       className={cn(
         "relative rounded-md border",
         isValidating && "opacity-80",
-        className,
+        className
       )}
     >
       {isValidating ? (
@@ -105,8 +105,8 @@ function PendingProfilesTable({
               typeof profile.url === "string" && profile.url.trim()
                 ? profile.url.trim()
                 : typeof profile.input_url === "string" && profile.input_url
-                  ? profile.input_url
-                  : "";
+                ? profile.input_url
+                : "";
             const rowKey = profile.username || profile.id || `row-${index}`;
             const isCheckedRow = profile.status === "checked";
             return (
@@ -114,7 +114,7 @@ function PendingProfilesTable({
                 key={`${rowKey}-${index}`}
                 className={cn(
                   isCheckedRow &&
-                    "bg-emerald-100 hover:bg-emerald-100 dark:bg-emerald-950 dark:hover:bg-emerald-950",
+                    "bg-emerald-100 hover:bg-emerald-100 dark:bg-emerald-950 dark:hover:bg-emerald-950"
                 )}
               >
                 <TableCell className="text-center tabular-nums text-muted-foreground">
@@ -122,9 +122,7 @@ function PendingProfilesTable({
                 </TableCell>
                 <TableCell className="font-medium">
                   <div className="flex max-w-[200px] items-center gap-0.5">
-                    <span className="min-w-0 truncate">
-                      {profile.username}
-                    </span>
+                    <span className="min-w-0 truncate">{profile.username}</span>
                     {profile.username ? (
                       <Button
                         type="button"
@@ -156,7 +154,7 @@ function PendingProfilesTable({
                           onProfileUrlClick?.(
                             typeof profile.username === "string"
                               ? profile.username
-                              : "",
+                              : ""
                           )
                         }
                         className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-pink-600 hover:underline dark:text-pink-400"
@@ -198,13 +196,12 @@ function PendingProfilesTable({
                         "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100",
                       profile.status === "error" &&
                         "bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-100",
-                      !profile.status &&
-                        "bg-muted text-muted-foreground",
+                      !profile.status && "bg-muted text-muted-foreground"
                     )}
                   >
                     {profile.status ?? "—"}
                   </span>
-                  {profile.hasExternalUrl ? (
+                  {profile.has_external_url ? (
                     <span className="ml-1 text-[10px] text-muted-foreground">
                       ext.
                     </span>

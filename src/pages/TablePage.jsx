@@ -2,8 +2,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
 import { reportClientError } from "@/utils/reportClientError";
-import { ChevronLeft, ChevronRight, RefreshCw, Table2 } from "lucide-react";
 import {
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+  Table2,
+  Trash2,
+} from "lucide-react";
+import { toast } from "sonner";
+import {
+  deletePendingProfiles,
   getApiErrorMessage,
   getPendingProfilesPage,
   patchProfilesChecked,
@@ -20,6 +28,7 @@ async function pendingProfilesFetcher([, pageNum]) {
 
 function TablePage() {
   const [page, setPage] = useState(1);
+  const [isDeletingPending, setIsDeletingPending] = useState(false);
   const { data, error, isLoading, isValidating, mutate } = useSWR(
     pendingProfilesSwrKey(page),
     pendingProfilesFetcher,
@@ -133,6 +142,39 @@ function TablePage() {
     void mutate();
   };
 
+  const handleDeleteAllPending = async () => {
+    if (totalDocs <= 0) return;
+    if (
+      !window.confirm(
+        `Delete all ${totalDocs.toLocaleString()} pending profile(s)? Profiles already marked checked are not removed. This cannot be undone.`
+      )
+    ) {
+      return;
+    }
+    setIsDeletingPending(true);
+    try {
+      const res = await deletePendingProfiles();
+      const deleted = res?.data?.deletedCount;
+      markQueueRef.current.clear();
+      if (flushTimerRef.current) {
+        clearTimeout(flushTimerRef.current);
+        flushTimerRef.current = null;
+      }
+      setPage(1);
+      await mutate();
+      toast.success(
+        typeof deleted === "number"
+          ? `Deleted ${deleted.toLocaleString()} pending profile(s).`
+          : "All pending profiles deleted."
+      );
+    } catch (e) {
+      reportClientError("TablePage/deletePending", e, getApiErrorMessage(e));
+      toast.error(getApiErrorMessage(e));
+    } finally {
+      setIsDeletingPending(false);
+    }
+  };
+
   const goPrev = () => {
     const p = pagination?.prev_page;
     if (p != null) setPage(p);
@@ -195,19 +237,40 @@ function TablePage() {
               </p>
             </div>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="gap-2 self-start sm:self-auto"
-            onClick={handleRefresh}
-            disabled={isLoading || isValidating}
-          >
-            <RefreshCw
-              className={`size-4 ${isValidating ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </Button>
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={handleRefresh}
+              disabled={isLoading || isValidating || isDeletingPending}
+            >
+              <RefreshCw
+                className={`size-4 ${isValidating ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              className="gap-2"
+              onClick={() => void handleDeleteAllPending()}
+              disabled={
+                isLoading ||
+                isValidating ||
+                isDeletingPending ||
+                totalDocs <= 0 ||
+                !!error
+              }
+            >
+              <Trash2
+                className={`size-4 ${isDeletingPending ? "animate-pulse" : ""}`}
+              />
+              {isDeletingPending ? "Deleting…" : "Delete all pending"}
+            </Button>
+          </div>
         </div>
 
         <Separator />

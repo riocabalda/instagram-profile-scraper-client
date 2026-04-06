@@ -218,7 +218,7 @@ function HomePage() {
               <Input
                 id="following-limit"
                 inputMode="numeric"
-                placeholder="2000"
+                placeholder="500"
                 value={followingLimit}
                 onChange={(e) => setFollowingLimit(e.target.value)}
                 disabled={isRunning}
@@ -233,7 +233,7 @@ function HomePage() {
               <Input
                 id="chunk-limit"
                 inputMode="numeric"
-                placeholder="100"
+                placeholder="500"
                 value={chunkLimit}
                 onChange={(e) => setChunkLimit(e.target.value)}
                 disabled={isRunning}

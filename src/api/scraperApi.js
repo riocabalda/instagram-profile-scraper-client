@@ -23,7 +23,7 @@ import { apiClient, SCRAPER_TRIGGER_TIMEOUT_MS } from "./client";
  * @property {number} [followers_count]
  * @property {string} [bio]
  * @property {string} [status]
- * @property {boolean} [hasExternalUrl]
+ * @property {boolean} [has_external_url]
  * @property {string} [createdAt]
  */
 
@@ -56,6 +56,14 @@ export async function patchProfilesChecked(usernames) {
   const { data } = await apiClient.patch("/api/scraper/profiles", {
     usernames,
   });
+  return data;
+}
+
+/**
+ * @returns {Promise<{ success: boolean; data: { deletedCount: number } }>}
+ */
+export async function deletePendingProfiles() {
+  const { data } = await apiClient.delete("/api/scraper/profiles/pending");
   return data;
 }
 
