@@ -256,7 +256,10 @@ function QualifiedSeedsHomeCard() {
           </div>
         </div>
 
-        <div className="space-y-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <div>
+            <span>Total seeds: {rows.length}</span>
+          </div>
           <div className="border rounded-lg h-full min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain">
             <Table containerClassName="h-full min-h-0 min-w-0 max-w-full">
               <TableHeader className="sticky top-0 z-10 bg-card shadow-sm">
@@ -376,7 +379,6 @@ function QualifiedSeedsHomeCard() {
               </TableBody>
             </Table>
           </div>
-
           <div className="flex shrink-0 flex-col gap-3 border rounded-lg px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm tabular-nums text-foreground">
               <span className="font-medium">{selectedIndices.size}</span>

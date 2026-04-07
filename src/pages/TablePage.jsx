@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  deletePendingProfiles,
+  // deletePendingProfiles,
   getApiErrorMessage,
   getPendingProfilesPage,
   patchProfilesChecked,
@@ -29,7 +29,7 @@ async function pendingProfilesFetcher([, pageNum]) {
 
 function TablePage() {
   const [page, setPage] = useState(1);
-  const [isDeletingPending, setIsDeletingPending] = useState(false);
+  // const [isDeletingPending, setIsDeletingPending] = useState(false);
   const [qualifyingUsername, setQualifyingUsername] = useState(
     /** @type {string | null} */ (null)
   );
@@ -187,38 +187,38 @@ function TablePage() {
     void mutate();
   };
 
-  const handleDeleteAllPending = async () => {
-    if (totalDocs <= 0) return;
-    if (
-      !window.confirm(
-        `Delete all ${totalDocs.toLocaleString()} pending profile(s)? Profiles already marked checked are not removed. This cannot be undone.`
-      )
-    ) {
-      return;
-    }
-    setIsDeletingPending(true);
-    try {
-      const res = await deletePendingProfiles();
-      const deleted = res?.data?.deletedCount;
-      markQueueRef.current.clear();
-      if (flushTimerRef.current) {
-        clearTimeout(flushTimerRef.current);
-        flushTimerRef.current = null;
-      }
-      setPage(1);
-      await mutate();
-      toast.success(
-        typeof deleted === "number"
-          ? `Deleted ${deleted.toLocaleString()} pending profile(s).`
-          : "All pending profiles deleted."
-      );
-    } catch (e) {
-      reportClientError("TablePage/deletePending", e, getApiErrorMessage(e));
-      toast.error(getApiErrorMessage(e));
-    } finally {
-      setIsDeletingPending(false);
-    }
-  };
+  // const handleDeleteAllPending = async () => {
+  //   if (totalDocs <= 0) return;
+  //   if (
+  //     !window.confirm(
+  //       `Delete all ${totalDocs.toLocaleString()} pending profile(s)? Profiles already marked checked are not removed. This cannot be undone.`
+  //     )
+  //   ) {
+  //     return;
+  //   }
+  //   setIsDeletingPending(true);
+  //   try {
+  //     const res = await deletePendingProfiles();
+  //     const deleted = res?.data?.deletedCount;
+  //     markQueueRef.current.clear();
+  //     if (flushTimerRef.current) {
+  //       clearTimeout(flushTimerRef.current);
+  //       flushTimerRef.current = null;
+  //     }
+  //     setPage(1);
+  //     await mutate();
+  //     toast.success(
+  //       typeof deleted === "number"
+  //         ? `Deleted ${deleted.toLocaleString()} pending profile(s).`
+  //         : "All pending profiles deleted."
+  //     );
+  //   } catch (e) {
+  //     reportClientError("TablePage/deletePending", e, getApiErrorMessage(e));
+  //     toast.error(getApiErrorMessage(e));
+  //   } finally {
+  //     setIsDeletingPending(false);
+  //   }
+  // };
 
   const goPrev = () => {
     const p = pagination?.prev_page;
@@ -289,14 +289,15 @@ function TablePage() {
               size="sm"
               className="gap-2"
               onClick={handleRefresh}
-              disabled={isLoading || isValidating || isDeletingPending}
+              disabled={isLoading || isValidating}
+              //  || isDeletingPending}
             >
               <RefreshCw
                 className={`size-4 ${isValidating ? "animate-spin" : ""}`}
               />
               Refresh
             </Button>
-            <Button
+            {/* <Button
               type="button"
               variant="destructive"
               size="sm"
@@ -314,7 +315,7 @@ function TablePage() {
                 className={`size-4 ${isDeletingPending ? "animate-pulse" : ""}`}
               />
               {isDeletingPending ? "Deleting…" : "Delete all pending"}
-            </Button>
+            </Button> */}
           </div>
         </div>
 

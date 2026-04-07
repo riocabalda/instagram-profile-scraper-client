@@ -94,18 +94,19 @@ function PendingProfilesTable({
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-12 text-center tabular-nums">#</TableHead>
             <TableHead className="min-w-[120px]">Username</TableHead>
-            <TableHead className="min-w-[140px]">Name</TableHead>
-            <TableHead className="min-w-[200px]">URL</TableHead>
             <TableHead className="min-w-[128px] whitespace-nowrap">
               Seed
             </TableHead>
+            <TableHead className="min-w-[160px]">Status</TableHead>
+            <TableHead className="min-w-[200px]">URL</TableHead>
+            <TableHead className="min-w-[140px]">Name</TableHead>
             <TableHead className="w-[104px] whitespace-nowrap">
               Followers
             </TableHead>
             <TableHead className="w-[104px] whitespace-nowrap">
               Following
             </TableHead>
-            <TableHead className="min-w-[160px]">Status</TableHead>
+
             <TableHead className="min-w-[220px]">Bio</TableHead>
           </TableRow>
         </TableHeader>
@@ -133,6 +134,7 @@ function PendingProfilesTable({
                 <TableCell className="text-center tabular-nums text-muted-foreground">
                   {(index + 1).toString()}
                 </TableCell>
+
                 <TableCell className="font-medium">
                   <div className="flex max-w-[200px] items-center gap-0.5">
                     <span className="min-w-0 truncate">{profile.username}</span>
@@ -153,9 +155,54 @@ function PendingProfilesTable({
                     ) : null}
                   </div>
                 </TableCell>
-                <TableCell className="max-w-[200px] truncate">
-                  {profile.full_name || "—"}
+
+                <TableCell>
+                  <Button
+                    type="button"
+                    variant={isQualified ? "secondary" : "default"}
+                    size="sm"
+                    className={cn(
+                      "h-8 whitespace-nowrap px-2 text-xs",
+                      !isQualified && "bg-green-600 hover:bg-green-800"
+                    )}
+                    disabled={
+                      isQualified ||
+                      isQualifying ||
+                      !onQualifySeed ||
+                      !profile.username
+                    }
+                    onClick={() => onQualifySeed?.(profile)}
+                  >
+                    {isQualified
+                      ? "Qualified Seed"
+                      : isQualifying
+                      ? "Saving…"
+                      : "Qualify Seed"}
+                  </Button>
                 </TableCell>
+
+                <TableCell>
+                  <span
+                    className={cn(
+                      "inline-flex rounded-full px-2 py-0.5 text-xs font-medium",
+                      profile.status === "pending" &&
+                        "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-100",
+                      profile.status === "checked" &&
+                        "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100",
+                      profile.status === "error" &&
+                        "bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-100",
+                      !profile.status && "bg-muted text-muted-foreground"
+                    )}
+                  >
+                    {profile.status ?? "—"}
+                  </span>
+                  {profile.has_external_url ? (
+                    <span className="ml-1 text-[10px] text-muted-foreground">
+                      ext.
+                    </span>
+                  ) : null}
+                </TableCell>
+
                 <TableCell className="max-w-[320px]">
                   {url ? (
                     <div className="flex max-w-full items-center gap-0.5">
@@ -194,58 +241,22 @@ function PendingProfilesTable({
                     "—"
                   )}
                 </TableCell>
-                <TableCell>
-                  <Button
-                    type="button"
-                    variant={isQualified ? "secondary" : "outline"}
-                    size="sm"
-                    className="h-8 whitespace-nowrap px-2 text-xs"
-                    disabled={
-                      isQualified ||
-                      isQualifying ||
-                      !onQualifySeed ||
-                      !profile.username
-                    }
-                    onClick={() => onQualifySeed?.(profile)}
-                  >
-                    {isQualified
-                      ? "Qualified Seed"
-                      : isQualifying
-                      ? "Saving…"
-                      : "Qualify Seed"}
-                  </Button>
+
+                <TableCell className="max-w-[200px] truncate">
+                  {profile.full_name || "—"}
                 </TableCell>
                 <TableCell className="tabular-nums">
                   {profile.followers_count != null
                     ? Number(profile.followers_count).toLocaleString()
                     : "—"}
                 </TableCell>
+
                 <TableCell className="tabular-nums">
                   {profile.follows_count != null
                     ? Number(profile.follows_count).toLocaleString()
                     : "—"}
                 </TableCell>
-                <TableCell>
-                  <span
-                    className={cn(
-                      "inline-flex rounded-full px-2 py-0.5 text-xs font-medium",
-                      profile.status === "pending" &&
-                        "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-100",
-                      profile.status === "checked" &&
-                        "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100",
-                      profile.status === "error" &&
-                        "bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-100",
-                      !profile.status && "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {profile.status ?? "—"}
-                  </span>
-                  {profile.has_external_url ? (
-                    <span className="ml-1 text-[10px] text-muted-foreground">
-                      ext.
-                    </span>
-                  ) : null}
-                </TableCell>
+
                 <TableCell className="max-w-[320px] truncate text-muted-foreground">
                   {profile.bio || "—"}
                 </TableCell>

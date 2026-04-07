@@ -107,7 +107,7 @@ export async function getQualifiedSeedsList(followingLimit) {
 }
 
 /**
- * All qualified seeds: no following max filter, includes pipeline input usernames.
+ * All qualified seeds: no following max filter; excludes pipeline input usernames.
  * @returns {Promise<{ success: boolean; data: QualifiedSeedRow[] }>}
  */
 export async function getQualifiedSeedsListAll() {
