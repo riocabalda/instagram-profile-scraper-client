@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Copy, ExternalLink, Leaf, Loader2 } from "lucide-react";
+import { Copy, ExternalLink, Leaf, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
+  deleteQualifiedSeed,
   getApiErrorMessage,
   getQualifiedSeedsList,
   getQualifiedSeedsListAll,
@@ -53,6 +54,9 @@ function QualifiedSeedsHomeCard() {
     /** @type {{ username: string; following: number }[]} */ ([])
   );
   const [selectedIndices, setSelectedIndices] = useState(() => new Set());
+  const [deletingForUsername, setDeletingForUsername] = useState(
+    /** @type {string | null} */ (null)
+  );
   const selectAllRef = useRef(/** @type {HTMLInputElement | null} */ (null));
 
   const handleFetch = async () => {
@@ -110,7 +114,7 @@ function QualifiedSeedsHomeCard() {
     }
   };
 
-  const busy = loading || loadingAll;
+  const busy = loading || loadingAll || deletingForUsername != null;
 
   const selectedRows = useMemo(() => {
     const ordered = [...selectedIndices].sort((a, b) => a - b);
@@ -148,6 +152,29 @@ function QualifiedSeedsHomeCard() {
   const toggleSelectAll = () => {
     if (allSelected) setSelectedIndices(new Set());
     else setSelectedIndices(new Set(rows.map((_, i) => i)));
+  };
+
+  const handleDeleteRow = async (username) => {
+    const u = String(username ?? "").trim();
+    if (!u) return;
+
+    setDeletingForUsername(u);
+    try {
+      const res = await deleteQualifiedSeed(u);
+      if (res?.success) {
+        setRows((prev) => prev.filter((r) => r.username !== u));
+        setSelectedIndices(new Set());
+        toast.success(`Removed @${u} from qualified seeds.`);
+      } else {
+        toast.error("Unexpected response from server.");
+      }
+    } catch (err) {
+      const msg = getApiErrorMessage(err);
+      reportClientError("QualifiedSeedsHomeCard/delete", err, msg);
+      toast.error(msg);
+    } finally {
+      setDeletingForUsername(null);
+    }
   };
 
   const handleBulkCopyUsernames = () => {
@@ -249,6 +276,9 @@ function QualifiedSeedsHomeCard() {
                   <TableHead>Username</TableHead>
                   <TableHead className="w-[120px]">Following</TableHead>
                   <TableHead className="min-w-[180px]">URL</TableHead>
+                  <TableHead className="w-[52px] px-2 text-right">
+                    <span className="sr-only">Delete</span>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -320,6 +350,25 @@ function QualifiedSeedsHomeCard() {
                         ) : (
                           "—"
                         )}
+                      </TableCell>
+                      <TableCell className="px-2 text-right">
+                        {row.username ? (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            aria-label={`Delete qualified seed ${row.username}`}
+                            disabled={busy}
+                            onClick={() => void handleDeleteRow(row.username)}
+                          >
+                            {deletingForUsername === row.username ? (
+                              <Loader2 className="size-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="size-4" />
+                            )}
+                          </Button>
+                        ) : null}
                       </TableCell>
                     </TableRow>
                   );

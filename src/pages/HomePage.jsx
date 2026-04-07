@@ -1,5 +1,6 @@
 import { Loader2, Play } from "lucide-react";
 import QualifiedSeedsHomeCard from "@/components/scraper/QualifiedSeedsHomeCard";
+import SaveQualifiedSeedCard from "@/components/scraper/SaveQualifiedSeedCard";
 import {
   getApiErrorMessage,
   joinMessageWithDuplicates,
@@ -317,6 +318,8 @@ function HomePage() {
           <QualifiedSeedsHomeCard />
         </div>
       </div>
+
+      <SaveQualifiedSeedCard />
     </div>
   );
 }

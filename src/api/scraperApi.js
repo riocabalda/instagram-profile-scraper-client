@@ -85,6 +85,17 @@ export async function postQualifiedSeed(payload) {
 }
 
 /**
+ * @param {string} username
+ * @returns {Promise<{ success: boolean; data: { username: string } }>}
+ */
+export async function deleteQualifiedSeed(username) {
+  const { data } = await apiClient.delete("/api/scraper/qualified-seeds", {
+    params: { username },
+  });
+  return data;
+}
+
+/**
  * @param {number} followingLimit
  * @returns {Promise<{ success: boolean; data: QualifiedSeedRow[] }>}
  */
