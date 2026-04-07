@@ -2,8 +2,8 @@ import { forwardRef } from "react";
 
 import { cn } from "@/lib/utils";
 
-const Table = forwardRef(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
+const Table = forwardRef(({ className, containerClassName, ...props }, ref) => (
+  <div className={cn("relative w-full overflow-auto", containerClassName)}>
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
@@ -14,16 +14,16 @@ const Table = forwardRef(({ className, ...props }, ref) => (
 Table.displayName = "Table";
 
 const TableHeader = forwardRef(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  <thead
+    ref={ref}
+    className={cn("[&_tr]:border-b [&_tr]:border-border", className)}
+    {...props}
+  />
 ));
 TableHeader.displayName = "TableHeader";
 
 const TableBody = forwardRef(({ className, ...props }, ref) => (
-  <tbody
-    ref={ref}
-    className={cn("[&_tr:last-child]:border-0", className)}
-    {...props}
-  />
+  <tbody ref={ref} className={cn(className)} {...props} />
 ));
 TableBody.displayName = "TableBody";
 
@@ -32,7 +32,7 @@ const TableFooter = forwardRef(({ className, ...props }, ref) => (
     ref={ref}
     className={cn(
       "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
-      className,
+      className
     )}
     {...props}
   />
@@ -43,8 +43,8 @@ const TableRow = forwardRef(({ className, ...props }, ref) => (
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
-      className,
+      "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+      className
     )}
     {...props}
   />
@@ -56,7 +56,7 @@ const TableHead = forwardRef(({ className, ...props }, ref) => (
     ref={ref}
     className={cn(
       "h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
-      className,
+      className
     )}
     {...props}
   />

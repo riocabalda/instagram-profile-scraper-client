@@ -32,6 +32,8 @@ async function copyText(label, text) {
  * @param {boolean} [props.isLoading]
  * @param {boolean} [props.isValidating]
  * @param {(username: string) => void} [props.onProfileUrlClick]
+ * @param {(profile: import("@/api/scraperApi").PendingProfile) => void | Promise<void>} [props.onQualifySeed]
+ * @param {string | null} [props.qualifyingUsername] - lowercase username while request in flight
  * @param {string} [props.className]
  */
 function PendingProfilesTable({
@@ -39,6 +41,8 @@ function PendingProfilesTable({
   isLoading = false,
   isValidating = false,
   onProfileUrlClick,
+  onQualifySeed,
+  qualifyingUsername = null,
   className,
 }) {
   const showInitialLoader = isLoading && profiles.length === 0;
@@ -92,8 +96,14 @@ function PendingProfilesTable({
             <TableHead className="min-w-[120px]">Username</TableHead>
             <TableHead className="min-w-[140px]">Name</TableHead>
             <TableHead className="min-w-[200px]">URL</TableHead>
+            <TableHead className="min-w-[128px] whitespace-nowrap">
+              Seed
+            </TableHead>
             <TableHead className="w-[104px] whitespace-nowrap">
               Followers
+            </TableHead>
+            <TableHead className="w-[104px] whitespace-nowrap">
+              Following
             </TableHead>
             <TableHead className="min-w-[160px]">Status</TableHead>
             <TableHead className="min-w-[220px]">Bio</TableHead>
@@ -109,6 +119,9 @@ function PendingProfilesTable({
                 : "";
             const rowKey = profile.username || profile.id || `row-${index}`;
             const isCheckedRow = profile.status === "checked";
+            const uname = String(profile.username || "").toLowerCase();
+            const isQualified = profile.is_qualified_seed === true;
+            const isQualifying = qualifyingUsername === uname;
             return (
               <TableRow
                 key={`${rowKey}-${index}`}
@@ -181,9 +194,35 @@ function PendingProfilesTable({
                     "—"
                   )}
                 </TableCell>
+                <TableCell>
+                  <Button
+                    type="button"
+                    variant={isQualified ? "secondary" : "outline"}
+                    size="sm"
+                    className="h-8 whitespace-nowrap px-2 text-xs"
+                    disabled={
+                      isQualified ||
+                      isQualifying ||
+                      !onQualifySeed ||
+                      !profile.username
+                    }
+                    onClick={() => onQualifySeed?.(profile)}
+                  >
+                    {isQualified
+                      ? "Qualified Seed"
+                      : isQualifying
+                      ? "Saving…"
+                      : "Qualify Seed"}
+                  </Button>
+                </TableCell>
                 <TableCell className="tabular-nums">
                   {profile.followers_count != null
                     ? Number(profile.followers_count).toLocaleString()
+                    : "—"}
+                </TableCell>
+                <TableCell className="tabular-nums">
+                  {profile.follows_count != null
+                    ? Number(profile.follows_count).toLocaleString()
                     : "—"}
                 </TableCell>
                 <TableCell>

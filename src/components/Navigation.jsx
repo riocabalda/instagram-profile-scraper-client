@@ -25,7 +25,9 @@ function Navigation() {
         <div className="flex items-center gap-3">
           <div className="inline-flex items-center gap-2 rounded-full border bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur">
             <Instagram className="size-3.5 text-pink-600" aria-hidden />
-            <span className="leading-none">Instagram profile toolkit</span>
+            <span className="hidden lg:block leading-none">
+              Instagram profile toolkit
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-6">

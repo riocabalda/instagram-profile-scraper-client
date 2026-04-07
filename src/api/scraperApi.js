@@ -21,10 +21,18 @@ import { apiClient, SCRAPER_TRIGGER_TIMEOUT_MS } from "./client";
  * @property {string} [url]
  * @property {string} [input_url]
  * @property {number} [followers_count]
+ * @property {number} [follows_count]
  * @property {string} [bio]
  * @property {string} [status]
  * @property {boolean} [has_external_url]
+ * @property {boolean} [is_qualified_seed]
  * @property {string} [createdAt]
+ */
+
+/**
+ * @typedef {object} QualifiedSeedRow
+ * @property {string} username
+ * @property {number} following
  */
 
 /**
@@ -64,6 +72,37 @@ export async function patchProfilesChecked(usernames) {
  */
 export async function deletePendingProfiles() {
   const { data } = await apiClient.delete("/api/scraper/profiles/pending");
+  return data;
+}
+
+/**
+ * @param {{ username: string; following: number }} payload
+ * @returns {Promise<{ success: boolean; data: { username: string; following: number } }>}
+ */
+export async function postQualifiedSeed(payload) {
+  const { data } = await apiClient.post("/api/scraper/qualified-seeds", payload);
+  return data;
+}
+
+/**
+ * @param {number} followingLimit
+ * @returns {Promise<{ success: boolean; data: QualifiedSeedRow[] }>}
+ */
+export async function getQualifiedSeedsList(followingLimit) {
+  const { data } = await apiClient.get("/api/scraper/qualified-seeds", {
+    params: { followingLimit },
+  });
+  return data;
+}
+
+/**
+ * All qualified seeds: no following max filter, includes pipeline input usernames.
+ * @returns {Promise<{ success: boolean; data: QualifiedSeedRow[] }>}
+ */
+export async function getQualifiedSeedsListAll() {
+  const { data } = await apiClient.get("/api/scraper/qualified-seeds", {
+    params: { all: true },
+  });
   return data;
 }
 

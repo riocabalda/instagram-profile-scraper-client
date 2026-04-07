@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import { Loader2, Play } from "lucide-react";
+import QualifiedSeedsHomeCard from "@/components/scraper/QualifiedSeedsHomeCard";
 import {
   getApiErrorMessage,
   joinMessageWithDuplicates,
@@ -139,7 +139,7 @@ function HomePage() {
     : "border-violet-100/80 bg-card/40 dark:border-violet-900/40";
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto flex min-w-0 max-w-6xl flex-col gap-10 py-10 lg:px-8">
       {banner ? (
         <header
           className={cn(
@@ -182,136 +182,141 @@ function HomePage() {
         </header>
       ) : null}
 
-      <Card className="border-violet-100/80 shadow-md dark:border-violet-900/40">
-        <CardHeader>
-          <div className="flex items-start gap-3">
-            <div className="rounded-lg border bg-violet-50/80 p-2 dark:bg-violet-950/40">
-              <Play className="size-5 text-violet-700 dark:text-violet-300" />
+      <div className="grid min-w-0 gap-6 lg:grid-cols-2 lg:items-stretch">
+        <Card className="rounded-none lg:rounded-lg h-full min-h-0 min-w-0 border-violet-100/80 shadow-md dark:border-violet-900/40">
+          <CardHeader>
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg border bg-violet-50/80 p-2 dark:bg-violet-950/40">
+                <Play className="size-5 text-violet-700 dark:text-violet-300" />
+              </div>
+              <div className="space-y-1">
+                <CardTitle>Scrape pipeline</CardTitle>
+              </div>
             </div>
-            <div className="space-y-1">
-              <CardTitle>Scrape pipeline</CardTitle>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="seed-usernames">Seed usernames</Label>
-            <Textarea
-              id="seed-usernames"
-              placeholder={"sam.22\nalt.mina"}
-              value={inputsText}
-              onChange={(e) => setInputsText(e.target.value)}
-              className="min-h-[140px] font-mono text-sm"
-              disabled={isRunning}
-            />
-            <p className="text-xs text-muted-foreground">
-              One username per line (e.g.{" "}
-              <code className="rounded bg-muted px-0.5">sam.22</code>). A
-              leading <code className="rounded bg-muted px-0.5">@</code> is
-              optional and is stripped before the request.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
+          </CardHeader>
+          <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="following-limit">Following limit</Label>
-              <Input
-                id="following-limit"
-                inputMode="numeric"
-                placeholder="500"
-                value={followingLimit}
-                onChange={(e) => setFollowingLimit(e.target.value)}
+              <Label htmlFor="seed-usernames">Seed usernames</Label>
+              <Textarea
+                id="seed-usernames"
+                placeholder={"sam.22\nalt.mina"}
+                value={inputsText}
+                onChange={(e) => setInputsText(e.target.value)}
+                className="min-h-[140px] font-mono text-sm"
                 disabled={isRunning}
               />
               <p className="text-xs text-muted-foreground">
-                Apify &quot;resultsLimit&quot; (1–5000). Leave blank to omit and
-                use server default.
+                One username per line (e.g.{" "}
+                <code className="rounded bg-muted px-0.5">sam.22</code>). A
+                leading <code className="rounded bg-muted px-0.5">@</code> is
+                optional and is stripped before the request.
               </p>
             </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="following-limit">Following limit</Label>
+                <Input
+                  id="following-limit"
+                  inputMode="numeric"
+                  placeholder="500"
+                  value={followingLimit}
+                  onChange={(e) => setFollowingLimit(e.target.value)}
+                  disabled={isRunning}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Apify &quot;resultsLimit&quot; (1–5000). Leave blank to omit
+                  and use server default.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="chunk-limit">Chunk size</Label>
+                <Input
+                  id="chunk-limit"
+                  inputMode="numeric"
+                  placeholder="500"
+                  value={chunkLimit}
+                  onChange={(e) => setChunkLimit(e.target.value)}
+                  disabled={isRunning}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Profiles per batch for the detail actor (1–1000). Blank =
+                  server default.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="followers-min">Min followers (filter)</Label>
+                <Input
+                  id="followers-min"
+                  inputMode="numeric"
+                  placeholder="500"
+                  value={followersMin}
+                  onChange={(e) => setFollowersMin(e.target.value)}
+                  disabled={isRunning}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Lower bound for the &quot;followers + URL&quot; save rule.
+                  Default 500.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="followers-max">Max followers (filter)</Label>
+                <Input
+                  id="followers-max"
+                  inputMode="numeric"
+                  placeholder="50000"
+                  value={followersMax}
+                  onChange={(e) => setFollowersMax(e.target.value)}
+                  disabled={isRunning}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Upper bound for the same rule. Default 50,000.
+                </p>
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="chunk-limit">Chunk size</Label>
+              <Label htmlFor="apify-token">Apify API token</Label>
               <Input
-                id="chunk-limit"
-                inputMode="numeric"
-                placeholder="500"
-                value={chunkLimit}
-                onChange={(e) => setChunkLimit(e.target.value)}
+                id="apify-token"
+                type="password"
+                autoComplete="off"
+                placeholder="apify_api_…"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
                 disabled={isRunning}
               />
-              <p className="text-xs text-muted-foreground">
-                Profiles per batch for the detail actor (1–1000). Blank = server
-                default.
-              </p>
             </div>
-          </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="followers-min">Min followers (filter)</Label>
-              <Input
-                id="followers-min"
-                inputMode="numeric"
-                placeholder="500"
-                value={followersMin}
-                onChange={(e) => setFollowersMin(e.target.value)}
+            <div className="flex flex-wrap gap-3">
+              <Button
+                type="button"
+                onClick={handleRunScrape}
                 disabled={isRunning}
-              />
-              <p className="text-xs text-muted-foreground">
-                Lower bound for the &quot;followers + URL&quot; save rule.
-                Default 500.
-              </p>
+                className="gap-2 bg-violet-600 hover:bg-violet-600/90 dark:bg-violet-600 dark:hover:bg-violet-600/90"
+              >
+                {isRunning ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Running pipeline…
+                  </>
+                ) : (
+                  <>
+                    <Play className="size-4" />
+                    Run scrape
+                  </>
+                )}
+              </Button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="followers-max">Max followers (filter)</Label>
-              <Input
-                id="followers-max"
-                inputMode="numeric"
-                placeholder="50000"
-                value={followersMax}
-                onChange={(e) => setFollowersMax(e.target.value)}
-                disabled={isRunning}
-              />
-              <p className="text-xs text-muted-foreground">
-                Upper bound for the same rule. Default 50,000.
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="apify-token">Apify API token</Label>
-            <Input
-              id="apify-token"
-              type="password"
-              autoComplete="off"
-              placeholder="apify_api_…"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              disabled={isRunning}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Button
-              type="button"
-              onClick={handleRunScrape}
-              disabled={isRunning}
-              className="gap-2 bg-violet-600 hover:bg-violet-600/90 dark:bg-violet-600 dark:hover:bg-violet-600/90"
-            >
-              {isRunning ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" />
-                  Running pipeline…
-                </>
-              ) : (
-                <>
-                  <Play className="size-4" />
-                  Run scrape
-                </>
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+        <div className="flex min-h-0 min-w-0 flex-col lg:h-full lg:min-h-0">
+          <QualifiedSeedsHomeCard />
+        </div>
+      </div>
     </div>
   );
 }

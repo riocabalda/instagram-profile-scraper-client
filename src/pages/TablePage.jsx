@@ -15,6 +15,7 @@ import {
   getApiErrorMessage,
   getPendingProfilesPage,
   patchProfilesChecked,
+  postQualifiedSeed,
 } from "@/api/scraperApi";
 import PendingProfilesTable from "@/components/scraper/PendingProfilesTable";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,9 @@ async function pendingProfilesFetcher([, pageNum]) {
 function TablePage() {
   const [page, setPage] = useState(1);
   const [isDeletingPending, setIsDeletingPending] = useState(false);
+  const [qualifyingUsername, setQualifyingUsername] = useState(
+    /** @type {string | null} */ (null)
+  );
   const { data, error, isLoading, isValidating, mutate } = useSWR(
     pendingProfilesSwrKey(page),
     pendingProfilesFetcher,
@@ -75,6 +79,47 @@ function TablePage() {
       );
     }
   }, [mutate]);
+
+  const handleQualifySeed = useCallback(
+    async (profile) => {
+      const u = String(profile?.username ?? "")
+        .trim()
+        .toLowerCase();
+      if (!u) return;
+      setQualifyingUsername(u);
+      try {
+        const following = Math.max(
+          0,
+          Math.floor(Number(profile.follows_count ?? 0))
+        );
+        await postQualifiedSeed({ username: u, following });
+        mutate(
+          (current) => {
+            if (!current?.success || !current.data?.data) return current;
+            return {
+              ...current,
+              data: {
+                ...current.data,
+                data: current.data.data.map((p) =>
+                  String(p.username).toLowerCase() === u
+                    ? { ...p, is_qualified_seed: true }
+                    : p
+                ),
+              },
+            };
+          },
+          { revalidate: false }
+        );
+        toast.success(`@${u} saved as qualified seed.`);
+      } catch (e) {
+        reportClientError("TablePage/qualifySeed", e, getApiErrorMessage(e));
+        toast.error(getApiErrorMessage(e));
+      } finally {
+        setQualifyingUsername(null);
+      }
+    },
+    [mutate]
+  );
 
   const scheduleMarkChecked = useCallback(
     (username) => {
@@ -280,6 +325,8 @@ function TablePage() {
           isLoading={isLoading}
           isValidating={isValidating}
           onProfileUrlClick={scheduleMarkChecked}
+          onQualifySeed={handleQualifySeed}
+          qualifyingUsername={qualifyingUsername}
         />
 
         {pagination && totalPages > 0 ? (
