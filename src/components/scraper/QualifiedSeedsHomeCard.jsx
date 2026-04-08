@@ -84,7 +84,6 @@ function QualifiedSeedsHomeCard() {
     } catch (err) {
       const msg = getApiErrorMessage(err);
       reportClientError("QualifiedSeedsHomeCard/fetch", err, msg);
-      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -108,7 +107,6 @@ function QualifiedSeedsHomeCard() {
     } catch (err) {
       const msg = getApiErrorMessage(err);
       reportClientError("QualifiedSeedsHomeCard/fetchAll", err, msg);
-      toast.error(msg);
     } finally {
       setLoadingAll(false);
     }
@@ -171,7 +169,6 @@ function QualifiedSeedsHomeCard() {
     } catch (err) {
       const msg = getApiErrorMessage(err);
       reportClientError("QualifiedSeedsHomeCard/delete", err, msg);
-      toast.error(msg);
     } finally {
       setDeletingForUsername(null);
     }

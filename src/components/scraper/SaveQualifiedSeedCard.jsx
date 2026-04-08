@@ -47,7 +47,6 @@ function SaveQualifiedSeedCard() {
     } catch (err) {
       const msg = getApiErrorMessage(err);
       reportClientError("SaveQualifiedSeedCard/save", err, msg);
-      toast.error(msg);
     } finally {
       setSaving(false);
     }

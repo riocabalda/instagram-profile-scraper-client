@@ -113,7 +113,6 @@ function TablePage() {
         toast.success(`@${u} saved as qualified seed.`);
       } catch (e) {
         reportClientError("TablePage/qualifySeed", e, getApiErrorMessage(e));
-        toast.error(getApiErrorMessage(e));
       } finally {
         setQualifyingUsername(null);
       }
