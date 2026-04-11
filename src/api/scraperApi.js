@@ -24,7 +24,6 @@ import { apiClient, SCRAPER_TRIGGER_TIMEOUT_MS } from "./client";
  * @property {number} [follows_count]
  * @property {string} [bio]
  * @property {string} [status]
- * @property {boolean} [has_external_url]
  * @property {boolean} [is_qualified_seed]
  * @property {string} [createdAt]
  */
@@ -80,7 +79,10 @@ export async function deletePendingProfiles() {
  * @returns {Promise<{ success: boolean; data: { username: string; following: number } }>}
  */
 export async function postQualifiedSeed(payload) {
-  const { data } = await apiClient.post("/api/scraper/qualified-seeds", payload);
+  const { data } = await apiClient.post(
+    "/api/scraper/qualified-seeds",
+    payload,
+  );
   return data;
 }
 
@@ -152,7 +154,7 @@ export function getApiErrorMessage(error) {
     const dupesRaw = data?.duplicates;
     const joined = joinMessageWithDuplicates(
       msg,
-      Array.isArray(dupesRaw) ? dupesRaw : []
+      Array.isArray(dupesRaw) ? dupesRaw : [],
     );
     if (joined) return joined;
 

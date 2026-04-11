@@ -57,7 +57,7 @@ function HomePage() {
     const cl = clRaw === "" ? undefined : Number(chunkLimit);
     if (fl !== undefined && (!Number.isInteger(fl) || fl < 1 || fl > 5000)) {
       setValidationError(
-        "Following limit must be an integer between 1 and 5000."
+        "Following limit must be an integer between 1 and 5000.",
       );
       return;
     }
@@ -80,7 +80,7 @@ function HomePage() {
     }
     if (fMin > fMax) {
       setValidationError(
-        "Minimum followers must be less than or equal to maximum."
+        "Minimum followers must be less than or equal to maximum.",
       );
       return;
     }
@@ -145,7 +145,7 @@ function HomePage() {
         <header
           className={cn(
             "rounded-xl border p-5 sm:p-6 transition-colors duration-200",
-            panelTone
+            panelTone,
           )}
         >
           <div
@@ -156,7 +156,7 @@ function HomePage() {
               banner.variant === "success" &&
                 "border-green-400/60 bg-white/70 dark:border-green-700 dark:bg-black/25",
               banner.variant === "error" &&
-                "border-red-400/60 bg-white/70 dark:border-red-800 dark:bg-black/25"
+                "border-red-400/60 bg-white/70 dark:border-red-800 dark:bg-black/25",
             )}
           >
             <div className="flex items-start gap-2">
@@ -283,7 +283,7 @@ function HomePage() {
               <Label htmlFor="apify-token">Apify API token</Label>
               <Input
                 id="apify-token"
-                type="password"
+                type="text"
                 autoComplete="off"
                 placeholder="apify_api_…"
                 value={token}
