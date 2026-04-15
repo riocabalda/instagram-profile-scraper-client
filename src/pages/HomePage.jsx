@@ -1,10 +1,12 @@
-import { Loader2, Play } from "lucide-react";
+import { Loader2, Play, Trash2 } from "lucide-react";
+import { useState } from "react";
 import QualifiedSeedsHomeCard from "@/components/scraper/QualifiedSeedsHomeCard";
 import SaveQualifiedSeedCard from "@/components/scraper/SaveQualifiedSeedCard";
 import {
   getApiErrorMessage,
   joinMessageWithDuplicates,
   postTriggerScrape,
+  deleteInputsByUsernames,
 } from "@/api/scraperApi";
 import { useScrapeFormStore } from "@/stores/scrapeFormStore";
 import { Button } from "@/components/ui/button";
@@ -13,9 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { parseSeedUsernames } from "@/utils/parseUsernameLines";
+import { reportClientError } from "@/utils/reportClientError";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 function HomePage() {
+  const [deletingInputs, setDeletingInputs] = useState(false);
+
   const inputsText = useScrapeFormStore((s) => s.inputsText);
   const followingLimit = useScrapeFormStore((s) => s.followingLimit);
   const chunkLimit = useScrapeFormStore((s) => s.chunkLimit);
@@ -128,6 +134,57 @@ function HomePage() {
     }
   };
 
+  const handleDeleteInputsByUsernames = async () => {
+    // Parse and validate usernames in textarea
+    const parsed = parseSeedUsernames(inputsText);
+    if (!parsed.ok) {
+      toast.error("Invalid usernames in textarea.");
+      return;
+    }
+
+    // Check if there are any usernames
+    if (!parsed.usernames || parsed.usernames.length === 0) {
+      toast.error("No user inputs in the seed usernames textarea.");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to delete ${parsed.usernames.length} seed username${
+          parsed.usernames.length === 1 ? "" : "s"
+        } from the database?`,
+      )
+    ) {
+      return;
+    }
+
+    setDeletingInputs(true);
+    try {
+      const res = await deleteInputsByUsernames(parsed.usernames);
+      if (res?.success && res.data) {
+        setBanner({
+          variant: "success",
+          message: `Deleted ${res.data.deletedCount} seed username${
+            res.data.deletedCount === 1 ? "" : "s"
+          } from usage.`,
+          payload: res.data,
+        });
+        setInputsText("");
+      } else {
+        setBanner({
+          variant: "error",
+          message: "Unexpected response from server.",
+        });
+      }
+    } catch (err) {
+      const msg = getApiErrorMessage(err);
+      reportClientError("HomePage/deleteInputs", err, msg);
+      setBanner({ variant: "error", message: msg });
+    } finally {
+      setDeletingInputs(false);
+    }
+  };
+
   const panelTone = banner
     ? {
         running:
@@ -197,10 +254,32 @@ function HomePage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="seed-usernames">Seed usernames</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="seed-usernames">Seed usernames</Label>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="gap-2 shrink-0"
+                  onClick={() => void handleDeleteInputsByUsernames()}
+                  disabled={isRunning || deletingInputs}
+                >
+                  {deletingInputs ? (
+                    <>
+                      <Loader2 className="size-3.5 animate-spin" />
+                      Deleting…
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="size-3.5" />
+                      Delete seeds from usage
+                    </>
+                  )}
+                </Button>
+              </div>
               <Textarea
                 id="seed-usernames"
-                placeholder={"sam.22\nalt.mina"}
+                placeholder={"input usernames..."}
                 value={inputsText}
                 onChange={(e) => setInputsText(e.target.value)}
                 className="min-h-[140px] font-mono text-sm"

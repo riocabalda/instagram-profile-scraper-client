@@ -36,8 +36,8 @@ function SaveQualifiedSeedCard() {
       if (res?.success && res.data) {
         toast.success(
           `Saved @${res.data.username} (${Number(
-            res.data.following
-          ).toLocaleString()} following).`
+            res.data.following,
+          ).toLocaleString()} following).`,
         );
         setUsername("");
         setFollowing("");
@@ -74,7 +74,7 @@ function SaveQualifiedSeedCard() {
             <Label htmlFor="save-qualified-username">Username</Label>
             <Input
               id="save-qualified-username"
-              placeholder="sam.22"
+              placeholder="..."
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={saving}

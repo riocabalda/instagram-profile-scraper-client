@@ -75,6 +75,21 @@ export async function deletePendingProfiles() {
 }
 
 /**
+ * @returns {Promise<{ success: boolean; data: { deletedCount: number } }>}
+ */
+
+/**
+ * @param {string[]} usernames
+ * @returns {Promise<{ success: boolean; data: { deletedCount: number; requestedCount: number } }>}
+ */
+export async function deleteInputsByUsernames(usernames) {
+  const { data } = await apiClient.delete("/api/scraper/inputs/usernames", {
+    data: { usernames },
+  });
+  return data;
+}
+
+/**
  * @param {{ username: string; following: number }} payload
  * @returns {Promise<{ success: boolean; data: { username: string; following: number } }>}
  */
